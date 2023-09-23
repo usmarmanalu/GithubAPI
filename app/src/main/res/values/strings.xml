@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Github User</string>
+    <string name="menu_1">menu_1</string>
+    <string name="nama">Nama</string>
+    <string name="username">username</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="type">type</string>
+    <string name="repo">repo</string>
+    <string name="followers">followers</string>
+    <string name="following">following</string>
+    <string name="toprofile">toProfile</string>
+    <string name="user">user</string>
+    <string name="search">Search</string>
+    <string name="user_avatar">User Avatar</string>
+</resources>
