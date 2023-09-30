@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         vectorDrawables.useSupportLibrary = true
-        buildConfigField("String", "KEY", "\"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\"")
+        buildConfigField("String", "KEY", "\"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\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
