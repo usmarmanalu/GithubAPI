@@ -4,20 +4,28 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.appgithubuser.R
+import com.example.appgithubuser.data.local.entity.FavoriteUserEntity
 import com.example.appgithubuser.data.response.DetailResponse
 import com.example.appgithubuser.databinding.ActivityDetailBinding
 import com.example.appgithubuser.model.DetailViewModel
+import com.example.appgithubuser.model.UserFavoriteViewModel
+import com.example.appgithubuser.model.UserFavoriteViewModelFactory
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private lateinit var viewModel: DetailViewModel
+    private lateinit var userFavoriteViewModel: UserFavoriteViewModel
     private lateinit var userLogin: String
+    private var isFavorite: Boolean = false
 
     private lateinit var shimmerImage: ShimmerFrameLayout
     private lateinit var shimmerName: ShimmerFrameLayout
@@ -26,22 +34,18 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var shimmerFollowers: ShimmerFrameLayout
     private lateinit var shimmerFollowings: ShimmerFrameLayout
 
-    companion object {
-        const val EXTRA_LOGIN = "extra_login"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        showLoading(true)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         userLogin = intent.getStringExtra(EXTRA_LOGIN) ?: ""
 
         viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
+
+        userFavoriteViewModel = ViewModelProvider(this, UserFavoriteViewModelFactory(application))[UserFavoriteViewModel::class.java]
 
         setupViews()
         startShimmerAnimations()
@@ -57,6 +61,20 @@ class DetailActivity : AppCompatActivity() {
             displayUserDetails(user)
             stopShimmerAnimations()
             showLoading(false)
+        }
+
+        userFavoriteViewModel.getAllUsers().observe(this) { favoriteUsers ->
+            isFavorite = favoriteUsers.any { it.login == userLogin }
+            updateFabIcon()
+        }
+
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
+            if (isFavorite) {
+                removeFromFavorites()
+            } else {
+                addToFavorites()
+            }
         }
     }
 
@@ -140,10 +158,50 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.tvFollowing.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.tvName.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.tvPublic.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.tvFollower.visibility = if (isLoading) View.GONE else View.VISIBLE
+        binding.apply {
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            tvFollowing.visibility = if (isLoading) View.GONE else View.VISIBLE
+            tvName.visibility = if (isLoading) View.GONE else View.VISIBLE
+            tvPublic.visibility = if (isLoading) View.GONE else View.VISIBLE
+            tvFollower.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
+    }
+
+    companion object {
+        const val EXTRA_LOGIN = "extra_login"
+    }
+
+    private fun addToFavorites() {
+        val user = FavoriteUserEntity(
+            userLogin,
+            viewModel.userDetail.value?.avatarUrl,
+            viewModel.userDetail.value?.htmlUrl
+        )
+        userFavoriteViewModel.insert(user)
+        Toast.makeText(this, "Ditambahkan ke favorit", Toast.LENGTH_SHORT).show()
+        isFavorite = true
+        updateFabIcon()
+    }
+
+    private fun removeFromFavorites() {
+        val user = FavoriteUserEntity(
+            userLogin,
+            viewModel.userDetail.value?.avatarUrl,
+            viewModel.userDetail.value?.htmlUrl
+        )
+        userFavoriteViewModel.delete(user)
+        Toast.makeText(this, "Dihapus dari favorit", Toast.LENGTH_SHORT).show()
+        isFavorite = false
+        updateFabIcon()
+    }
+
+    private fun updateFabIcon() {
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        if (isFavorite) {
+            fab.setImageResource(R.drawable.favorite_full_24)
+        } else {
+            fab.setImageResource(R.drawable.favorite_border_24)
+        }
     }
 }
+

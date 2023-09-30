@@ -1,11 +1,13 @@
 package com.example.appgithubuser.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.example.appgithubuser.R
 import com.example.appgithubuser.databinding.ActivityMainBinding
+import com.example.appgithubuser.setting.SettingActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +22,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.topAppBar)
         findUser()
+
+        binding.topAppBar.setOnMenuItemClickListener { meniItem ->
+            when (meniItem.itemId) {
+                R.id.setting -> {
+                    val intent = Intent(this, SettingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.favorite -> {
+                    val intent = Intent(this, FavoriteActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -12,4 +12,9 @@
     <string name="user">user</string>
     <string name="search">Search</string>
     <string name="user_avatar">User Avatar</string>
+    <string name="option_menu">option_menu</string>
+    <string name="favorite">Favorite</string>
+    <string name="setting">Setting</string>
+    <string name="dark_mode">dark mode</string>
+    <string name="tidak_ada_favorite">Tidak ada Favorite</string>
 </resources>

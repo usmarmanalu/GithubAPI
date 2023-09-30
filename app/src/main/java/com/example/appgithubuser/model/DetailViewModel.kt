@@ -6,8 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.appgithubuser.data.response.DetailResponse
 import com.example.appgithubuser.data.retrofit.ApiConfig
-import retrofit2.*
-class DetailViewModel : ViewModel() {
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class DetailViewModel() : ViewModel() {
 
     companion object {
         private const val TAG = "DetailViewModel"
@@ -26,7 +29,7 @@ class DetailViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        _userDetail.postValue(user)
+                        _userDetail.postValue(user!!)
                     } else {
                         Log.e(TAG, "OnFailure : ${response.message()}")
                     }

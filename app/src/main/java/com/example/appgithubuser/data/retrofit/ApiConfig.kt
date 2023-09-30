@@ -4,15 +4,20 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.appgithubuser.BuildConfig
 
 class ApiConfig {
     companion object {
 
         private const val BASE_URL = "https://api.github.com/"
-        private const val API_KEY = "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"
         fun getApiService(): ApiService {
-            val loggingInterceptor =
+            val loggingInterceptor = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
+            }else {
+                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
+            }
+
             val client = OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor { chain ->
@@ -20,7 +25,7 @@ class ApiConfig {
                     val requestBuilder = original.newBuilder()
                         .header(
                             "Authorization",
-                            "Bearer $API_KEY"
+                            "Bearer ${BuildConfig.KEY}"
                         )
                         .method(original.method, original.body)
                     val request = requestBuilder.build()
